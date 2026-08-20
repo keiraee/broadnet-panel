@@ -3,19 +3,26 @@ services:
     build: .
     image: broadnet-panel:latest
     container_name: broadnet-panel
+    # Chromium needs shared memory; without this WSL/Docker often dies with exit 137
+    shm_size: "1gb"
+    init: true
     ports:
-      # Container listens on 9993.
-      # Windows Hyper-V may block host 9993 (excluded range ~9906–10005).
-      # If bind fails, use: "39993:9993" and open http://localhost:39993/
       - "9994:9993"
     environment:
       PORT: "9993"
       HEADLESS: "1"
       BROWSER_PROFILE: /data/browser-profile
       KEEPALIVE_MS: "600000"
+      NODE_OPTIONS: "--max-old-space-size=384"
     volumes:
       - browser-profile:/data/browser-profile
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:9993/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   browser-profile:

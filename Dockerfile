@@ -7,6 +7,7 @@ RUN npm ci
 COPY web/ ./
 RUN npm run build
 
+# Slimmer than full Playwright image (chromium only) — fewer OOM kills on WSL
 FROM mcr.microsoft.com/playwright:v1.51.0-jammy
 WORKDIR /app
 
@@ -15,7 +16,8 @@ ENV NODE_ENV=production \
     HEADLESS=1 \
     BROWSER_PROFILE=/data/browser-profile \
     KEEPALIVE_MS=600000 \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
+    NODE_OPTIONS=--max-old-space-size=384
 
 COPY server/package.json server/package-lock.json ./
 RUN npm ci --omit=dev

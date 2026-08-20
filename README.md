@@ -4,46 +4,68 @@
 
 默认对外端口 **9994**（容器内仍为 9993）。
 
-## Docker（推荐）
+## Docker / WSL 一键
+
+**建议在 WSL 的 Linux 家目录里跑**（不要长期在 `/mnt/c`、`/mnt/h` 上 build，又慢又容易出权限问题）：
 
 ```bash
-docker compose up -d --build
+git clone https://github.com/keiraee/broadnet-panel.git ~/broadnet-panel \
+  && cd ~/broadnet-panel \
+  && docker compose up -d --build
 ```
 
-浏览器打开 http://localhost:9994/  
-短信登录后查看余额 / 套餐余量 / 套外费用。会话保存在 Docker volume `browser-profile`，换机器可带走该 volume。
+打开 http://localhost:9994/
+
+看日志：
 
 ```bash
-docker compose down
+docker compose -f ~/broadnet-panel/docker-compose.yml logs -f
 ```
+
+停止：
+
+```bash
+cd ~/broadnet-panel && docker compose down
+```
+
+### 若容器马上退出（exit 137）
+
+137 = 内存不够（Chromium）。给 WSL 加内存，在 Windows 用户目录创建 `%UserProfile%\.wslconfig`：
+
+```ini
+[wsl2]
+memory=4GB
+swap=2GB
+```
+
+然后在 PowerShell 执行 `wsl --shutdown`，再开 WSL 重新 `docker compose up -d`。
+
+本仓库 compose 已加 `shm_size: 1gb`，减轻 Chromium 在容器里崩溃的概率。
 
 ### 改端口
 
-默认映射主机 **9994** → 容器 9993。若要改主机端口，编辑 `docker-compose.yml` 的 `ports`，例如 `"8080:9993"`。
+编辑 `docker-compose.yml` 的 `ports`，例如 `"8080:9993"`。
 
-> 说明：部分 Windows 上直接绑 9993 可能被 Hyper-V 保留段拦住，所以默认用 9994。
-## 本机开发
+## 本机开发（非 Docker）
 
 ```bash
-# 终端 1
 npm --prefix server install
 cd server && npx playwright install chromium
 npm --prefix server run dev
 
-# 终端 2
 npm --prefix web install
 npm --prefix web run dev
 ```
 
-可选：`HEADLESS=0` 弹出可视浏览器便于排查。
+可选：`HEADLESS=0` 弹出可视浏览器。
 
 ## 架构简述
 
 - 前端：Vue 自定义 UI
-- 后端：Hono BFF；用 Playwright 维持 WAF Cookie
-- 业务请求：Node 侧复现官网 RSA/`Access` 密封后直调 `/contact-web`
+- 后端：Hono BFF；Playwright 维持 WAF Cookie
+- 业务：Node 密封后直调官网 `/contact-web`
 
 ## 注意
 
-- 仅供个人自用本地部署；请遵守官网服务条款
+- 仅供个人自用；请遵守官网服务条款
 - WAF / 会话过期后需重新验证码登录

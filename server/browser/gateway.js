@@ -116,7 +116,17 @@ export class BroadnetGateway {
     console.log('[gateway] open ephemeral browser')
     const browser = await chromium.launch({
       headless,
-      args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--mute-audio',
+        '--no-first-run',
+      ],
     })
     const opts = {
       locale: 'zh-CN',
