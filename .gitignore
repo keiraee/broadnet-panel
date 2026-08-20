@@ -1,0 +1,14 @@
+node_modules/
+web/node_modules/
+server/node_modules/
+web/dist/
+server/public/
+server/data/
+server/capture/
+vendor-src/
+*.log
+.DS_Store
+.env
+.env.*
+*.cookies
+waf-cookies.txt

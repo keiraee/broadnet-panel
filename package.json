@@ -1,0 +1,15 @@
+{
+  "name": "broadnet-panel",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Portable China Broadnet (10099) personal-center panel",
+  "scripts": {
+    "dev:web": "npm --prefix web run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:web": "npm --prefix web run build && node scripts/copy-web.mjs",
+    "start": "npm --prefix server run start",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
+  }
+}

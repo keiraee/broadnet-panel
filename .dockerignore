@@ -1,0 +1,17 @@
+node_modules
+web/node_modules
+server/node_modules
+server/data
+server/capture
+server/public
+web/dist
+vendor-src
+.git
+*.log
+.env
+.env.*
+login.html
+personal-center-number-order.html
+docs
+**/*.md
+!README.md
