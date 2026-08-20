@@ -2,7 +2,7 @@
 
 可移植的中国广电（10099）个人中心面板：自定义 UI + 官方加密 API + Docker 一键运行。
 
-默认端口 **9993**。
+默认对外端口 **9994**（容器内仍为 9993）。
 
 ## Docker（推荐）
 
@@ -10,24 +10,18 @@
 docker compose up -d --build
 ```
 
-浏览器打开 http://localhost:9993/  
+浏览器打开 http://localhost:9994/  
 短信登录后查看余额 / 套餐余量 / 套外费用。会话保存在 Docker volume `browser-profile`，换机器可带走该 volume。
 
 ```bash
 docker compose down
 ```
 
-### Windows 端口被占用 / EACCES
+### 改端口
 
-部分 Windows 主机上 9993 落在 Hyper-V 保留段。把 `docker-compose.yml` 改成：
+默认映射主机 **9994** → 容器 9993。若要改主机端口，编辑 `docker-compose.yml` 的 `ports`，例如 `"8080:9993"`。
 
-```yaml
-ports:
-  - "39993:9993"
-```
-
-访问 http://localhost:39993/（容器内仍是 9993）。
-
+> 说明：部分 Windows 上直接绑 9993 可能被 Hyper-V 保留段拦住，所以默认用 9994。
 ## 本机开发
 
 ```bash
